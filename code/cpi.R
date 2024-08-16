@@ -74,6 +74,7 @@ cpi %>%
 
 ggsave("/Users/takayukitamura/Documents/R_Computing/us_pop_gdp/figures/US_CPI.png", width = 6, height = 4)
 
-cpi %>% filter(date == "2020-01-01")
-  
+cpi %>% slice_max(date)
+cpi_2020 <- cpi %>% filter(date == "2020-01-01")
+latest_cpi  
 
