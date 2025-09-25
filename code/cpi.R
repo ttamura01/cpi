@@ -3,15 +3,20 @@ library(ggtext)
 library(patchwork)
 library(glue)
 library(scales)
+library(fredr)
 
 ## download cip data
-cpi <- read_csv("https://fred.stlouisfed.org/graph/fredgraph.csv?bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=on&txtcolor=%23444444&ts=12&tts=12&width=1318&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=CPIAUCSL&scale=left&cosd=1947-01-01&coed=2024-06-01&line_color=%234572a7&link_values=false&line_style=solid&mark_type=none&mw=3&lw=2&ost=-99999&oet=99999&mma=0&fml=a&fq=Monthly&fam=avg&fgst=lin&fgsnd=2020-02-01&line_index=1&transformation=lin&vintage_date=2024-07-28&revision_date=2024-07-28&nd=1947-01-01") %>% 
-  rename(date = DATE, cpi = CPIAUCSL)
 
-updates <- tribble(~date, ~cpi,
-                   "2024-07-01", 313.534)
+#Set my FRED API key
+fredr_set_key("0c5fd2514c7d98427fe3c931e2fcb244")
 
-cpi <- rbind(cpi, updates)
+cpi <- fredr(series_id = "CPIAUCSL") %>% 
+  select(date, cpi = value) 
+
+# updates <- tribble(~date, ~cpi,
+#                    "2024-07-01", 313.534)
+
+# cpi <- rbind(cpi, updates)
 
 tail(cpi)
 
@@ -59,8 +64,8 @@ cpi %>%
   geom_line() +
   geom_text(data=latest_data, aes(x = date, y = cpi, label = latest_cpi_label, vjust = -0.5), color = "blue") +
   scale_y_continuous(
-    limits = c(0, 320),
-    breaks = seq(0, 320, 50),
+    limits = c(NA, NA),
+    # breaks = seq(NA, NA, NA),
     labels = label_comma(accuracy = 0.1)) +
   labs(title = glue("US CPI increased {multiple_label} times to {latest_cpi_label}, past for {interval_label} years from {initial_cpi_label} in {initial_year} (= annual rate at {r_label}%)"),
        x = NULL,
